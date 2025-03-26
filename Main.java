@@ -1,79 +1,69 @@
 package org.example;
-
 import java.util.Arrays;
-import java.util.Random;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Main {
-
-    private static final Logger logger = Logger.getLogger(Main.class.getName());
-
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
     public static void main(String[] args) {
-        int totalNumbers = 10000; // количество случайных чисел для генерации
-        int[] randomNumbers = generateRandomArray(totalNumbers); // генерация массива случайных целых чисел
 
-        // выводим сгенерированные числа
-        System.out.println("Сгенерированные случайные числа:");
-        printArray(randomNumbers); // вызов метода для вывода массива
+        Scanner ok = new Scanner(System.in);
+        LOGGER.info("Программа запущена.");
 
-        int maxSquareSum = findMaxSquareSum(randomNumbers); // находим максимальную сумму квадратов двух элементов
-        System.out.println("Максимальная сумма квадратов: " + maxSquareSum);
+        System.out.println("введите длину массива");
+        int n = ok.nextInt();
+        LOGGER.info("Длина массива: " + n);
+
+        System.out.println("заполните массив");
+        int[] num = new int[n];
+        for (int i = 0; i < n; i++) {
+            num[i] = ok.nextInt();
+            LOGGER.info("Элемент массива [" + i + "]: " + num[i]);
+        }
+
+        System.out.println("ваш массив: " +  Arrays.toString(num));
+        LOGGER.info("Массив: " + Arrays.toString(num));
+
+        int majorityElement = findMajorityElement(num);
+        System.out.println("Мажоритарный элемент: " + majorityElement);
+        LOGGER.info("Мажоритарный элемент: " + majorityElement);
     }
 
-    // метод для генерации массива случайных целых чисел
-    private static int[] generateRandomArray(int count) {
-        if (count <= 0) {
-            logger.severe("Количество чисел для генерации должно быть положительным.");
-            throw new IllegalArgumentException("Количество чисел для генерации должно быть положительным.");
-        }
+    public static int findMajorityElement(int[] num) {
+        LOGGER.info("Поиск мажоритарного элемента начат.");
+        int green = 0;
+        int count = 0;
 
-        Random rand = new Random();
-        int[] numbersArray = new int[count]; // массив для хранения сгенерированных чисел
-
-        for (int index = 0; index < count; index++) {
-            // генерация случайных чисел в диапазоне от -100 до 100
-            numbersArray[index] = rand.nextInt(201) - 100;
-            logger.log(Level.FINE, "Сгенерировано число: " + numbersArray[index]);
-        }
-        logger.log(Level.INFO, "Массив случайных чисел сгенерирован успешно.");
-        return numbersArray;
-    }
-
-    // метод для вывода массива
-    private static void printArray(int[] array) {
-        if (array == null) {
-            logger.severe("Массив не может быть null.");
-            throw new IllegalArgumentException("Массив не может быть null.");
-        }
-
-        for (int index = 0; index < array.length; index++) {
-            System.out.print(array[index] + " ");
-            // переход на новую строку после каждых 20 чисел
-            if ((index + 1) % 20 == 0) {
-                System.out.println();
+        // Найти возможного кандидата на мажоритарный элемент
+        for (int i = 0; i < num.length; i++) {
+            if (count == 0) {
+                green = num[i]; // присвоение текущего элемента
+                LOGGER.info("Кандидат на мажоритарный элемент: " + green);
+            }
+            if (num[i] == green) {
+                count++;
+                LOGGER.info("Увеличение счетчика для элемента " + green + ": " + count);
+            } else {
+                count--;
+                LOGGER.info("Уменьшение счетчика для элемента " + green + ": " + count);
             }
         }
-        System.out.println(); // добавление пустой строки для разделения
-        logger.log(Level.INFO, "Массив выведен успешно.");
-    }
 
-    // метод для нахождения максимальной суммы квадратов двух элементов
-    public static int findMaxSquareSum(int[] numbers) {
-        if (numbers == null || numbers.length < 2) {
-            logger.severe("Массив должен содержать как минимум два элемента.");
-            throw new IllegalArgumentException("Массив должен содержать как минимум два элемента.");
+        count = 0;
+        for (int i = 0; i < num.length; i++) {
+            if (num[i] == green) {
+                count++;
+            }
         }
+        LOGGER.info("Количество вхождений кандидата: " + count);
 
-        Arrays.sort(numbers); // сортируем массив
-
-        // находим два наибольших элемента
-        int largest = numbers[numbers.length - 1];
-        int secondLargest = numbers[numbers.length - 2];
-
-        // вычисляем сумму квадратов этих двух элементов
-        int maxSquareSum = (largest * largest) + (secondLargest * secondLargest);
-        logger.log(Level.INFO, "Максимальная сумма квадратов: " + maxSquareSum);
-        return maxSquareSum;
+        if (count > num.length / 2) {
+            LOGGER.info("Мажоритарный элемент найден: " + green);
+            return green;
+        } else {
+            LOGGER.info("Мажоритарный элемент не найден.");
+            return 0;
+        }
     }
 }
